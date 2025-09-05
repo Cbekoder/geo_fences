@@ -23,22 +23,19 @@ def publish_geo_event(device_id, fence, event, lat, lon):
         "timestamp": datetime.utcnow().isoformat()
     }
 
-    # RabbitMQ serverga ulanish (localhost da ishlayotgan bo‘lsa)
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host="localhost")
     )
     channel = connection.channel()
 
-    # Queue mavjud bo‘lmasa, yaratadi
     channel.queue_declare(queue="geo-events", durable=True)
 
-    # JSON xabar publish qilamiz
     channel.basic_publish(
         exchange="",
         routing_key="geo-events",
         body=json.dumps(message),
         properties=pika.BasicProperties(
-            delivery_mode=2,  # persistent
+            delivery_mode=2,
         )
     )
     connection.close()
